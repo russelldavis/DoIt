@@ -220,6 +220,13 @@ struct process start_process(char *cmdline, int wait, int output, char *dir)
         si.wShowWindow = SW_HIDE;
         inherit = TRUE;
         ret.fromchild = fromchild;
+    } else {
+        // Hack to allow the process to set the foreground window. Without this,
+        // the main window of the process being created will often end up in the
+        // background without the keyboard focus.
+        // Seems to be a rarely published hack - I've only seen it here:
+        // http://groups.google.com/group/microsoft.public.win32.programmer.ui/browse_thread/thread/3f8401be9c874741/ef8cca87677b5e0a?lnk=st&q=setforegroundwindow+workaround&rnum=4&hl=en#ef8cca87677b5e0a
+        keybd_event(0, 0, 0, 0);
     }
     if (CreateProcess(NULL, cmdline, NULL, NULL, inherit,
                       CREATE_NEW_CONSOLE | NORMAL_PRIORITY_CLASS,
